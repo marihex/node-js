@@ -93,8 +93,8 @@ app.get('/users/:userId', (req, res) => {
     try {
         const userId = Number(req.params.userId);
         const user = users.find(user => user.id === userId);
-        if (!userId) {
-            res.status(404).send("Error404. User not found!");
+        if (!user) {
+            return res.status(404).send("Error404. User not found!");
         }
         res.send(user);
 
@@ -109,7 +109,10 @@ app.post('/users', (req, res) => {
     try {
         const {name, age, email, password} = req.body;
         const id = users[users.length - 1].id + 1;
-        if (name.length <= 3 || age < 0) {
+        if (typeof name !== "string" ||
+            name.length <= 3 ||
+            typeof age !== "number" ||
+            age < 0) {
            return res.status(400).send("Error400. Incorrect data");
         }
         const newUser = {id, name, age, email, password};
@@ -130,7 +133,10 @@ app.put('/users/:userId', (req, res) => {
             return res.status(404).send("Error404. User not found");
         }
         const {name, age, email, password} = req.body;
-        if (name.length <= 3 || age < 0) {
+        if (typeof name !== "string" ||
+            name.length <= 3 ||
+            typeof age !== "number" ||
+            age < 0) {
             return res.status(400).send("Error400. Incorrect data");
         }
 
