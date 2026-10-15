@@ -6,7 +6,6 @@ import express, {
 
 import { ApiError } from "./errors/api.errors.js";
 import { userRouter } from "./routes/user.router.js";
-// import { read } from "./services/fs.service.js";
 
 const app = express();
 
@@ -14,81 +13,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/users", userRouter);
-
-// app.get("/users", async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const users = await read();
-//     res.send(users);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-// app.put(
-//   "/users/:userId",
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       const userId = Number(req.params.userId);
-//       const { name, email, password } = req.body;
-//
-//       if (!name || name.length < 3) {
-//         throw new ApiError(
-//           "Name is required and should be at least 3 characters long",
-//           400,
-//         );
-//       }
-//       if (!email || !email.includes("@")) {
-//         throw new ApiError("Email is required and should be valid", 400);
-//       }
-//       if (!password || password.length < 6) {
-//         throw new ApiError(
-//           "Password is required and should be at least 6 characters long",
-//           400,
-//         );
-//       }
-//       const users = await read();
-//
-//       const userIndex = users.findIndex((user) => user.id === userId);
-//       if (userIndex === -1) {
-//         throw new ApiError("User not found", 404);
-//       }
-//
-//       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//       // @ts-expect-error
-//       users[userIndex].name = name;
-//       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//       // @ts-expect-error
-//       users[userIndex].email = email;
-//       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//       // @ts-expect-error
-//       users[userIndex].password = password;
-//
-//       await write(users);
-//       res.status(201).send(users[userIndex]);
-//     } catch (e) {
-//       next(e);
-//     }
-//   },
-// );
-// app.delete(
-//   "/users/:userId",
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       const userId = Number(req.params.userId);
-//       const users = await read();
-//
-//       const userIndex = users.findIndex((user) => user.id === userId);
-//       if (userIndex === -1) {
-//         throw new ApiError("User not found", 404);
-//       }
-//       users.splice(userIndex, 1);
-//
-//       await write(users);
-//       res.sendStatus(204);
-//     } catch (e) {
-//       next(e);
-//     }
-//   },
-// );
 
 app.use(
   "/{*splat}",

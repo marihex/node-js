@@ -1,4 +1,5 @@
 import { ApiError } from "../errors/api.errors.js";
+import type { UpdateUserDto } from "../interfaces/updetedUser.interface.js";
 import type { IUser } from "../interfaces/user.interface.js";
 import { read, write } from "../services/fs.service.js";
 
@@ -36,6 +37,63 @@ class UserRepository {
   public async getById(userId: number): Promise<IUser | undefined> {
     const users = await read();
     return users.find((user) => user.id === userId);
+  }
+
+  public async delete(userId: number): Promise<void> {
+    const users = await read();
+    const userIndex = users.findIndex((user) => user.id === userId);
+    if (userIndex === -1) {
+      throw new ApiError("User does not exist", 404);
+    }
+    users.splice(userIndex, 1);
+    await write(users);
+  }
+
+  public async update(userId: number, dto: UpdateUserDto): Promise<IUser> {
+    const users = await read();
+
+    const userIndex = users.findIndex((user) => user.id === userId);
+
+    if (userIndex === -1) {
+      throw new ApiError("User does not exist", 404);
+    }
+
+    const updatedUser: IUser = {
+      ...dto,
+      id: userId,
+    };
+
+    users[userIndex] = updatedUser;
+
+    await write(users);
+
+    return updatedUser;
+  }
+
+  public async patchUser(
+    userId: number,
+    dto: Partial<UpdateUserDto>,
+  ): Promise<IUser> {
+    const users = await read();
+    const userIndex = users.findIndex((user) => user.id === userId);
+    if (userIndex === -1) {
+      throw new ApiError("User does not exist", 404);
+    }
+    const user = users[userIndex];
+
+    if (!user) {
+      throw new ApiError("User does not exist", 404);
+    }
+    const updatedUser: IUser = {
+      ...user,
+      ...dto,
+      id: userId,
+    };
+    users[userIndex] = updatedUser;
+
+    await write(users);
+
+    return updatedUser;
   }
 }
 
