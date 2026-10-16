@@ -1,6 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
 
-import type { UpdateUserDto } from "../interfaces/updetedUser.interface.js";
 import type { IUser } from "../interfaces/user.interface.js";
 import { userService } from "../services/user.services.js";
 
@@ -26,8 +25,25 @@ class UserController {
 
   public async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = Number(req.params.userId);
+      const userId = req.params.userId;
+      if (typeof userId !== "string") {
+        throw new Error("Некорректный userId");
+      }
       const result = await userService.getById(userId);
+      res.json(result);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.params.userId;
+      if (typeof userId !== "string") {
+        throw new Error("Некорректный userId");
+      }
+      const dto = req.body as IUser;
+      const result = await userService.update(userId, dto);
       res.json(result);
     } catch (e) {
       next(e);
@@ -36,35 +52,27 @@ class UserController {
 
   public async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = Number(req.params.userId);
+      const userId = req.params.userId;
+      if (typeof userId !== "string") {
+        throw new Error("Некорректный userId");
+      }
       await userService.delete(userId);
-      res.status(204).end();
-    } catch (e) {
-      next(e);
-    }
-  }
-
-  public async update(req: Request, res: Response, next: NextFunction) {
-    try {
-      const userId = Number(req.params.userId);
-      const dto = req.body as UpdateUserDto;
-      const result = await userService.update(userId, dto);
-      res.status(200).json(result);
-    } catch (e) {
-      next(e);
-    }
-  }
-
-  public async patchUser(req: Request, res: Response, next: NextFunction) {
-    try {
-      const userId = Number(req.params.userId);
-      const dto = req.body as Partial<UpdateUserDto>;
-      const result = await userService.patchUser(userId, dto);
-      res.status(200).json(result);
+      res.sendStatus(204);
     } catch (e) {
       next(e);
     }
   }
 }
+
+// public async patchUser(req: Request, res: Response, next: NextFunction) {
+//   try {
+//     const userId = req.params.userId;
+//     const dto = req.body as Partial<UpdateUserDto>;
+//     const result = await userService.patchUser(userId, dto);
+//     res.status(200).json(result);
+//   } catch (e) {
+//     next(e);
+//   }
+// }
 
 export const userController = new UserController();

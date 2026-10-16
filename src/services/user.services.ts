@@ -27,7 +27,7 @@ class UserService {
     return await userRepository.create(dto);
   }
 
-  public async getById(userId: number): Promise<IUser> {
+  public async getById(userId: string): Promise<IUser> {
     const user = await userRepository.getById(userId);
     if (!user) {
       throw new ApiError("User not found", 404);
@@ -35,11 +35,14 @@ class UserService {
     return user;
   }
 
-  public async delete(userId: number): Promise<void> {
+  public async delete(userId: string): Promise<void> {
     await userRepository.delete(userId);
   }
 
-  public async update(userId: number, dto: UpdateUserDto): Promise<IUser> {
+  public async update(
+    userId: string,
+    dto: UpdateUserDto,
+  ): Promise<IUser | null> {
     const { name, email, password } = dto;
 
     if (typeof name !== "string" || name.length < 3) {
@@ -57,33 +60,33 @@ class UserService {
     return await userRepository.update(userId, dto);
   }
 
-  public async patchUser(
-    userId: number,
-    dto: Partial<UpdateUserDto>,
-  ): Promise<IUser> {
-    if (
-      dto.name !== undefined &&
-      (typeof dto.name !== "string" || dto.name.length < 3)
-    ) {
-      throw new ApiError("Name must contain at least 3 characters", 400);
-    }
-
-    if (
-      dto.email !== undefined &&
-      (typeof dto.email !== "string" || !dto.email.includes("@"))
-    ) {
-      throw new ApiError("Incorrect email", 400);
-    }
-
-    if (
-      dto.password !== undefined &&
-      (typeof dto.password !== "string" || dto.password.length < 6)
-    ) {
-      throw new ApiError("Password must contain at least 6 characters", 400);
-    }
-
-    return await userRepository.patchUser(userId, dto);
-  }
+  // public async patchUser(
+  //   userId: string,
+  //   dto: Partial<UpdateUserDto>,
+  // ): Promise<IUser> {
+  //   if (
+  //     dto.name !== undefined &&
+  //     (typeof dto.name !== "string" || dto.name.length < 3)
+  //   ) {
+  //     throw new ApiError("Name must contain at least 3 characters", 400);
+  //   }
+  //
+  //   if (
+  //     dto.email !== undefined &&
+  //     (typeof dto.email !== "string" || !dto.email.includes("@"))
+  //   ) {
+  //     throw new ApiError("Incorrect email", 400);
+  //   }
+  //
+  //   if (
+  //     dto.password !== undefined &&
+  //     (typeof dto.password !== "string" || dto.password.length < 6)
+  //   ) {
+  //     throw new ApiError("Password must contain at least 6 characters", 400);
+  //   }
+  //
+  //   return await userRepository.patchUser(userId, dto);
+  // }
 }
 
 export const userService = new UserService();
