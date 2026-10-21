@@ -20,7 +20,6 @@ app.use(
   "/{*splat}",
   (error: ApiError, req: Request, res: Response, next: NextFunction) => {
     res.status(error.status || 500).send(error.message);
-    process.exit(1);
   },
 );
 

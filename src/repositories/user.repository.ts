@@ -1,4 +1,4 @@
-import type { UpdateUserDto } from "../interfaces/updetedUser.interface.js";
+import type { UpdateUserDto } from "../interfaces/updatedUser.interface.js";
 import type { IUser } from "../interfaces/user.interface.js";
 import { User } from "../models/user.model.js";
 
@@ -28,12 +28,15 @@ class UserRepository {
     });
   }
 
-  // public async patchUser(
-  //   userId: string,
-  //   dto: Partial<UpdateUserDto>,
-  // ): Promise<IUser> {
-  //   return {} as IUser;
-  // }
+  public async patchUser(
+    userId: string,
+    dto: Partial<UpdateUserDto>,
+  ): Promise<IUser | null> {
+    return await User.findByIdAndUpdate(userId, dto, {
+      returnDocument: "after",
+      runValidators: true,
+    });
+  }
 }
 
 export const userRepository = new UserRepository();

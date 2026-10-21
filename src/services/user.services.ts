@@ -1,5 +1,5 @@
 import { ApiError } from "../errors/api.errors.js";
-import type { UpdateUserDto } from "../interfaces/updetedUser.interface.js";
+import type { UpdateUserDto } from "../interfaces/updatedUser.interface.js";
 import type { IUser } from "../interfaces/user.interface.js";
 import { userRepository } from "../repositories/user.repository.js";
 
@@ -60,33 +60,33 @@ class UserService {
     return await userRepository.update(userId, dto);
   }
 
-  // public async patchUser(
-  //   userId: string,
-  //   dto: Partial<UpdateUserDto>,
-  // ): Promise<IUser> {
-  //   if (
-  //     dto.name !== undefined &&
-  //     (typeof dto.name !== "string" || dto.name.length < 3)
-  //   ) {
-  //     throw new ApiError("Name must contain at least 3 characters", 400);
-  //   }
-  //
-  //   if (
-  //     dto.email !== undefined &&
-  //     (typeof dto.email !== "string" || !dto.email.includes("@"))
-  //   ) {
-  //     throw new ApiError("Incorrect email", 400);
-  //   }
-  //
-  //   if (
-  //     dto.password !== undefined &&
-  //     (typeof dto.password !== "string" || dto.password.length < 6)
-  //   ) {
-  //     throw new ApiError("Password must contain at least 6 characters", 400);
-  //   }
-  //
-  //   return await userRepository.patchUser(userId, dto);
-  // }
+  public async patchUser(
+    userId: string,
+    dto: Partial<UpdateUserDto>,
+  ): Promise<IUser | null> {
+    if (
+      dto.name !== undefined &&
+      (typeof dto.name !== "string" || dto.name.length < 3)
+    ) {
+      throw new ApiError("Name must contain at least 3 characters", 400);
+    }
+
+    if (
+      dto.email !== undefined &&
+      (typeof dto.email !== "string" || !dto.email.includes("@"))
+    ) {
+      throw new ApiError("Incorrect email", 400);
+    }
+
+    if (
+      dto.password !== undefined &&
+      (typeof dto.password !== "string" || dto.password.length < 6)
+    ) {
+      throw new ApiError("Password must contain at least 6 characters", 400);
+    }
+
+    return await userRepository.patchUser(userId, dto);
+  }
 }
 
 export const userService = new UserService();

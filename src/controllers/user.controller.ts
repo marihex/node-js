@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 
+import type { UpdateUserDto } from "../interfaces/updatedUser.interface.js";
 import type { IUser } from "../interfaces/user.interface.js";
 import { userService } from "../services/user.services.js";
 
@@ -62,17 +63,19 @@ class UserController {
       next(e);
     }
   }
+  public async patchUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.params.userId;
+      if (typeof userId !== "string") {
+        throw new Error("Некорректный userId");
+      }
+      const dto = req.body as Partial<UpdateUserDto>;
+      const result = await userService.patchUser(userId, dto);
+      res.status(200).json(result);
+    } catch (e) {
+      next(e);
+    }
+  }
 }
-
-// public async patchUser(req: Request, res: Response, next: NextFunction) {
-//   try {
-//     const userId = req.params.userId;
-//     const dto = req.body as Partial<UpdateUserDto>;
-//     const result = await userService.patchUser(userId, dto);
-//     res.status(200).json(result);
-//   } catch (e) {
-//     next(e);
-//   }
-// }
 
 export const userController = new UserController();
