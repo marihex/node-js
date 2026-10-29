@@ -1,6 +1,7 @@
 import { ApiError } from "../errors/api.errors.js";
 import type { UpdateUserDto } from "../interfaces/updatedUser.interface.js";
 import type { IUser } from "../interfaces/user.interface.js";
+import { User } from "../models/user.model.js";
 import { userRepository } from "../repositories/user.repository.js";
 
 class UserService {
@@ -8,22 +9,18 @@ class UserService {
     return await userRepository.getList();
   }
 
+  private async assertEmailIsFree(email: string, excludeId?: string) {
+    const filter: any = { email };
+    if (excludeId) filter._id = { $ne: excludeId };
+
+    const exists = await User.exists(filter);
+    if (exists) {
+      throw new ApiError("Email вже зайнятий", 409);
+    }
+  }
+
   public async create(dto: Partial<IUser>): Promise<IUser> {
-    if (!dto.name || dto.name.length < 3) {
-      throw new ApiError(
-        "Name is required and should be at least 3 characters long",
-        400,
-      );
-    }
-    if (!dto.email || !dto.email.includes("@")) {
-      throw new ApiError("Email is required and should be valid", 400);
-    }
-    if (!dto.password || dto.password.length < 6) {
-      throw new ApiError(
-        "Password is required and should be at least 6 characters long",
-        400,
-      );
-    }
+    await this.assertEmailIsFree(<string>dto.email);
     return await userRepository.create(dto);
   }
 
@@ -43,48 +40,19 @@ class UserService {
     userId: string,
     dto: UpdateUserDto,
   ): Promise<IUser | null> {
-    const { name, email, password } = dto;
+    // const { name, email, password } = dto;
 
-    if (typeof name !== "string" || name.length < 3) {
-      throw new ApiError("Incorrect name", 400);
+    const user = await userRepository.update(userId, dto);
+    if (!user) {
+      throw new ApiError("User not found", 404);
     }
-
-    if (typeof email !== "string" || !email.includes("@")) {
-      throw new ApiError("Incorrect email", 400);
-    }
-
-    if (typeof password !== "string" || password.length < 6) {
-      throw new ApiError("Incorrect password", 400);
-    }
-
-    return await userRepository.update(userId, dto);
+    return user;
   }
 
   public async patchUser(
     userId: string,
     dto: Partial<UpdateUserDto>,
   ): Promise<IUser | null> {
-    if (
-      dto.name !== undefined &&
-      (typeof dto.name !== "string" || dto.name.length < 3)
-    ) {
-      throw new ApiError("Name must contain at least 3 characters", 400);
-    }
-
-    if (
-      dto.email !== undefined &&
-      (typeof dto.email !== "string" || !dto.email.includes("@"))
-    ) {
-      throw new ApiError("Incorrect email", 400);
-    }
-
-    if (
-      dto.password !== undefined &&
-      (typeof dto.password !== "string" || dto.password.length < 6)
-    ) {
-      throw new ApiError("Password must contain at least 6 characters", 400);
-    }
-
     return await userRepository.patchUser(userId, dto);
   }
 }

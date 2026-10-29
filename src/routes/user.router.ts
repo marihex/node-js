@@ -26,13 +26,13 @@ router.delete(
 router.put(
   "/:userId",
   commonMiddleware.isIdValid("userId"),
-  commonMiddleware.isBodyValid(userValidation.createUserSchema),
+  commonMiddleware.isBodyValid(userValidation.putUserSchema),
   userController.update,
 );
 router.patch(
   "/:userId",
   commonMiddleware.isIdValid("userId"),
-  commonMiddleware.isBodyValid(userValidation.updateUserSchema),
+  commonMiddleware.isBodyValid(userValidation.patchUserSchema),
   userController.patchUser,
 );
 

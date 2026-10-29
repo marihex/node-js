@@ -9,7 +9,7 @@ class CommonMiddleware {
     return (req: Request, res: Response, next: NextFunction) => {
       try {
         if (!isObjectIdOrHexString(req.params[key])) {
-          throw new ApiError("Invalid ID", 400);
+          throw new ApiError("User not found", 404);
         }
         next();
       } catch (e) {
