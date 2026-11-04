@@ -7,6 +7,7 @@ import * as mongoose from "mongoose";
 
 import { config } from "./configs/config.js";
 import { ApiError } from "./errors/api.errors.js";
+import { authRouter } from "./routes/auth.router.js";
 import { userRouter } from "./routes/user.router.js";
 
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/users", userRouter);
+app.use("/auth", authRouter);
 
 app.use(
   "/{*splat}",

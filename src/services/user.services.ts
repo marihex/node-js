@@ -19,10 +19,11 @@ class UserService {
     }
   }
 
-  public async create(dto: Partial<IUser>): Promise<IUser> {
-    await this.assertEmailIsFree(<string>dto.email);
-    return await userRepository.create(dto);
-  }
+  // public async create(dto: Partial<IUser>): Promise<IUser> {
+  //   await this.assertEmailIsFree(<string>dto.email);
+  //   const password = await passwordService.hashPassword(<string>dto.password);
+  //   return await userRepository.create({ ...dto, password });
+  // }
 
   public async getById(userId: string): Promise<IUser> {
     const user = await userRepository.getById(userId);
