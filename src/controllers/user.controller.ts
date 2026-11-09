@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 
+import type { ITokenPayload } from "../interfaces/token.interfaces.js";
 import type { UpdateUserDto } from "../interfaces/updatedUser.interface.js";
 import type { IUser } from "../interfaces/user.interface.js";
 import { userService } from "../services/user.services.js";
@@ -37,27 +38,22 @@ class UserController {
     }
   }
 
-  public async update(req: Request, res: Response, next: NextFunction) {
+  public async updateMe(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = req.params.userId;
-      if (typeof userId !== "string") {
-        throw new Error("Некорректный userId");
-      }
+      const jwtPayload = req.res?.locals.jwtPayload as ITokenPayload;
+
       const dto = req.body as IUser;
-      const result = await userService.update(userId, dto);
+      const result = await userService.updateMe(jwtPayload, dto);
       res.json(result);
     } catch (e) {
       next(e);
     }
   }
 
-  public async delete(req: Request, res: Response, next: NextFunction) {
+  public async deleteMe(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = req.params.userId;
-      if (typeof userId !== "string") {
-        throw new Error("Некорректный userId");
-      }
-      await userService.delete(userId);
+      const jwtPayload = req.res?.locals.jwtPayload as ITokenPayload;
+      await userService.deleteMe(jwtPayload);
       res.sendStatus(204);
     } catch (e) {
       next(e);
@@ -72,6 +68,17 @@ class UserController {
       const dto = req.body as Partial<UpdateUserDto>;
       const result = await userService.patchUser(userId, dto);
       res.status(200).json(result);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  public async getMe(req: Request, res: Response, next: NextFunction) {
+    try {
+      const jwtPayload = req.res?.locals.jwtPayload as ITokenPayload;
+
+      const result = await userService.getMe(jwtPayload);
+      res.json(result);
     } catch (e) {
       next(e);
     }

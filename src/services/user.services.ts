@@ -1,4 +1,5 @@
 import { ApiError } from "../errors/api.errors.js";
+import type { ITokenPayload } from "../interfaces/token.interfaces.js";
 import type { UpdateUserDto } from "../interfaces/updatedUser.interface.js";
 import type { IUser } from "../interfaces/user.interface.js";
 import { User } from "../models/user.model.js";
@@ -33,17 +34,25 @@ class UserService {
     return user;
   }
 
-  public async delete(userId: string): Promise<void> {
-    await userRepository.delete(userId);
+  public async getMe(jwtPayload: ITokenPayload): Promise<IUser> {
+    const user = await userRepository.getById(jwtPayload.userId);
+    if (!user) {
+      throw new ApiError("User not found", 404);
+    }
+    return user;
   }
 
-  public async update(
-    userId: string,
+  public async deleteMe(jwtPayload: ITokenPayload): Promise<void> {
+    await userRepository.delete(jwtPayload.userId);
+  }
+
+  public async updateMe(
+    jwtPayload: ITokenPayload,
     dto: UpdateUserDto,
   ): Promise<IUser | null> {
     // const { name, email, password } = dto;
 
-    const user = await userRepository.update(userId, dto);
+    const user = await userRepository.update(jwtPayload.userId, dto);
     if (!user) {
       throw new ApiError("User not found", 404);
     }

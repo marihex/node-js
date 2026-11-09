@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 
 import { config } from "../configs/config.js";
+import { TokenTypeEnum } from "../enums/token-type.enum.js";
 import { ApiError } from "../errors/api.errors.js";
 import type {
   ITokenPair,
@@ -24,12 +25,18 @@ class TokenService {
     return { accessToken, refreshToken };
   }
 
-  public verifyToken(token: string): ITokenPayload {
+  public verifyToken(token: string, type: TokenTypeEnum): ITokenPayload {
+    let secret: any;
     try {
-      return jwt.verify(
-        token,
-        config.JWT_ACCESS_SECRET as string,
-      ) as ITokenPayload;
+      switch (type) {
+        case TokenTypeEnum.ACCESS:
+          secret = config.JWT_ACCESS_SECRET;
+          break;
+        case TokenTypeEnum.REFRESH:
+          secret = config.JWT_REFRESH_SECRET;
+          break;
+      }
+      return jwt.verify(token, secret) as ITokenPayload;
     } catch {
       throw new ApiError("Invalid JWT token", 401);
     }

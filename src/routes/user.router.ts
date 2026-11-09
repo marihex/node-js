@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { userController } from "../controllers/user.controller.js";
+import { authMiddleware } from "../middleware/auth.middleware.js";
 import { commonMiddleware } from "../middleware/common.middleware.js";
 import { userValidation } from "../validation/user.validation.js";
 
@@ -8,27 +9,30 @@ const router = Router();
 
 router.get("/", userController.getList);
 
-router.get(
-  "/:userId",
-  commonMiddleware.isIdValid("userId"),
-  userController.getById,
-);
+router.get("/me", authMiddleware.checkAccessToken, userController.getMe);
+
 router.delete(
-  "/:userId",
+  "/me",
+  authMiddleware.checkAccessToken,
   commonMiddleware.isIdValid("userId"),
-  userController.delete,
+  userController.deleteMe,
 );
 router.put(
-  "/:userId",
-  commonMiddleware.isIdValid("userId"),
+  "/me",
+  authMiddleware.checkAccessToken,
   commonMiddleware.isBodyValid(userValidation.putUserSchema),
-  userController.update,
+  userController.updateMe,
 );
 router.patch(
   "/:userId",
   commonMiddleware.isIdValid("userId"),
   commonMiddleware.isBodyValid(userValidation.patchUserSchema),
   userController.patchUser,
+);
+router.get(
+  "/:userId",
+  commonMiddleware.isIdValid("userId"),
+  userController.getById,
 );
 
 export const userRouter = router;

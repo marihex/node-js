@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 
+import { TokenTypeEnum } from "../enums/token-type.enum.js";
 import { ApiError } from "../errors/api.errors.js";
 import { tokenRepository } from "../repositories/token.repositories.js";
 import { tokenService } from "../services/token.service.js";
@@ -21,7 +22,10 @@ class AuthMiddlewares {
         throw new ApiError("Token is not provided", 401);
       }
 
-      const payload = tokenService.verifyToken(accessToken);
+      const payload = tokenService.verifyToken(
+        accessToken,
+        TokenTypeEnum.ACCESS,
+      );
       const pair = await tokenRepository.findByParams({ accessToken });
       if (!pair) {
         throw new ApiError("Token is not provided", 401);
