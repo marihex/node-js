@@ -52,8 +52,10 @@ class UserController {
 
   public async deleteMe(req: Request, res: Response, next: NextFunction) {
     try {
-      const jwtPayload = req.res?.locals.jwtPayload as ITokenPayload;
+      const jwtPayload = res.locals.jwtPayload as ITokenPayload;
+
       await userService.deleteMe(jwtPayload);
+
       res.sendStatus(204);
     } catch (e) {
       next(e);

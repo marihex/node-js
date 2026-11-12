@@ -31,7 +31,7 @@ class AuthMiddlewares {
         throw new ApiError("Token is not provided", 401);
       }
 
-      req.res!.locals.jwtPayload = payload;
+      res.locals.jwtPayload = payload;
       next();
     } catch (error) {
       next(error);

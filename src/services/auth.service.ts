@@ -1,3 +1,4 @@
+import { TokenTypeEnum } from "../enums/token-type.enum.js";
 import { ApiError } from "../errors/api.errors.js";
 import type {
   ITokenPair,
@@ -49,6 +50,43 @@ class AuthService {
     });
     await tokenRepository.create({ ...tokens, _userId: user._id! });
     return { user, tokens };
+  }
+
+  public async refreshToken(refreshToken: string): Promise<ITokenPair> {
+    const payload = tokenService.verifyToken(
+      refreshToken,
+      TokenTypeEnum.REFRESH,
+    );
+
+    const token = await tokenRepository.getByRefreshToken(refreshToken);
+
+    if (!token) {
+      throw new ApiError("Invalid refresh token", 401);
+    }
+
+    if (payload.userId !== token._userId.toString()) {
+      throw new ApiError("Invalid refresh token", 401);
+    }
+
+    const user = await userRepository.getById(token._userId);
+
+    if (!user) {
+      throw new ApiError("User not found", 404);
+    }
+
+    const tokens = tokenService.generateTokens({
+      userId: user._id!,
+      role: user.role,
+    });
+
+    await tokenRepository.deleteByRefreshToken(refreshToken);
+
+    await tokenRepository.create({
+      ...tokens,
+      _userId: user._id!,
+    });
+
+    return tokens;
   }
 
   private async isEmailExistOrThrow(email: string): Promise<void> {

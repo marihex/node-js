@@ -42,7 +42,13 @@ class UserService {
     return user;
   }
 
+  // public async deleteMe(jwtPayload: ITokenPayload): Promise<void> {
+  //   await userRepository.delete(jwtPayload.userId);
+  // }
+
   public async deleteMe(jwtPayload: ITokenPayload): Promise<void> {
+    console.log("User ID:", jwtPayload.userId);
+
     await userRepository.delete(jwtPayload.userId);
   }
 
